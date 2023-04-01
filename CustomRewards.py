@@ -31,6 +31,8 @@ class EnemyTouchBallReward(RewardFunction):
         for other in state.players:
             if other.team_num != player.team_num and other.ball_touched:
                 return -(state.ball.position[2]) / BALL_RADIUS
+            elif other.team_num == player.team_num and other.ball_touched:
+                return state.ball.position[2] / BALL_RADIUS / 1.5
         return 0
 
 class BoostUseReward(RewardFunction):
@@ -161,8 +163,8 @@ class JumpTouchReward(RewardFunction):
         if abs(player.car_data.position[0]) < 4001 and abs(player.car_data.position[1]) <5010:
             if player.ball_touched and not player.on_ground and state.ball.position[2] >= 1.5*self.min_height:
                 return state.ball.position[2] / self.min_height
-        elif player.ball_touched:
-            return np.linalg.norm(state.ball.linear_velocity)/CAR_MAX_SPEED
+            elif player.ball_touched:
+                return np.linalg.norm(state.ball.linear_velocity)/CAR_MAX_SPEED
         return 0
 
 class DribbleReward(RewardFunction):
@@ -192,7 +194,7 @@ class FirstTouchReward(RewardFunction):
 
     def get_reward(self, player: PlayerData, state: GameState, previous_action: np.ndarray) -> float:
         if player.ball_touched:
-            return 1000/(self.condition.steps+0.1)
+            return 2000/(self.condition.steps+0.1)
         return 0
 
 
@@ -204,6 +206,6 @@ class AirTimeReward(RewardFunction):
         pass
 
     def get_reward(self, player: PlayerData, state: GameState, previous_action: np.ndarray) -> float:
-        if player.car_data.position[2]>200:
+        if player.car_data.position[2]>200 and player.car_data.position[2] < state.ball.position[2]:
             return player.car_data.position[2]/100
         return 0

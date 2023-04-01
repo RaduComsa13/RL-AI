@@ -31,14 +31,11 @@ class CustomState(StateSetter):
         state_wrapper.ball.position[2] = np.random.rand()*500+1300
         state_wrapper.ball.position[0], state_wrapper.ball.position[1], d = self.generate_point(0, 0, 2000)
         state_wrapper.ball.linear_velocity[2] = 800
-        state_wrapper.ball.linear_velocity[0], state_wrapper.ball.linear_velocity[1], d = self.generate_point(100, 100, 500)
-
-        sign_of_xBall= math.copysign(1, state_wrapper.ball.position[0])
+        state_wrapper.ball.linear_velocity[0], state_wrapper.ball.linear_velocity[1], d = self.generate_point(200, 100, 800)
 
         blue_count = 0
         orange_count = 0
         x, y, d = self.generate_point(state_wrapper.ball.position[0],state_wrapper.ball.position[1],500)
-        x_diff = abs(state_wrapper.ball.linear_velocity[0]-x)
 
         pos1 = [x*sign, -abs(y), 17]
         pos2 = self.other_point(pos1,state_wrapper.ball.position)
@@ -62,7 +59,7 @@ class CustomState(StateSetter):
             # set car state values
             car.set_pos(*pos)
             car.set_rot(yaw=yaw)
-            car.boost = 1.0
+            car.boost = np.random.uniform(0.2, 1)
 
     def other_point(self, point, midpoint):
         x1, y1, z1 = point

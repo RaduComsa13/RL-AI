@@ -28,9 +28,9 @@ if __name__ == '__main__':  # Required for multiprocessing
 
     fps = 120 / frame_skip
     gamma = np.exp(np.log(0.5) / (fps * half_life_seconds))  # Quick mafs
-    agents_per_match = 2
-    team_size = 1
-    num_instances = 12
+    agents_per_match = 4
+    team_size = 2
+    num_instances = 8
     target_steps = 1_000_000
     steps = target_steps // (num_instances * agents_per_match) #making sure the experience counts line up properly
     batch_size = target_steps//10 #getting the batch size down to something more manageable - 100k in this case
@@ -48,55 +48,55 @@ if __name__ == '__main__':  # Required for multiprocessing
             tick_skip=frame_skip,
             reward_function=CombinedReward(
             (
-                VelocityPlayerToBallReward(),
-                VelocityPlayerReward(),
-                DriveForwardReward(),
-                BoostUseReward(),
-                RewardIfBehindBall(),
-                VelocityBallToGoalReward(),
-                FaceBallReward(),
-                AlignBallGoal(),
+                #VelocityPlayerToBallReward(),
+                #VelocityPlayerReward(),
+                #DriveForwardReward(),
+                #BoostUseReward(),
+                #RewardIfBehindBall(),
+                #VelocityBallToGoalReward(),
+                #FaceBallReward(),
+                #AlignBallGoal(),
                 KickoffReward(),
-                FirstTouchReward(timeoutCondition),
-                AirTimeReward(),
+                #FirstTouchReward(timeoutCondition),
+                #AirTimeReward(),
                 EnemyTouchBallReward(),
-                ClosestToBallReward(),
+                #ClosestToBallReward(),
                 #DribbleReward(),
-                JumpTouchReward(),
+                #JumpTouchReward(),
                 EventReward(
-                    goal=500.0,
-                    team_goal=300.0,
-                    concede=-600.0,
-                    shot=50.0,
-                    save=50.0,
+                    goal=50.0,
+                    team_goal=500.0,
+                    concede=-700.0,
+                    shot=100.0,
+                    save=200.0,
                     demo=10.0,
                     touch=10.0,
                     boost_pickup=10.0
                 ),
             ),
-            (1.0,   #VelocityPlayerToballReward
-             1.0,   #VelocityPlayerReward
-             1.0,   #DriveForwardReward
-             0.1,   #BoostUseReward
-             1.0,   #RewardIfBehindBall
-             20.0,  #VelocityBallToGoalReward
-             0.2,   #FaceBallReward
-             0.2,   #AlignBallGoal
+            (#1.0,   #VelocityPlayerToballReward
+             #1.0,   #VelocityPlayerReward
+             #1.0,   #DriveForwardReward
+             #0.1,   #BoostUseReward
+             #1.0,   #RewardIfBehindBall
+             #20.0,  #VelocityBallToGoalReward
+             #0.2,   #FaceBallReward
+             #0.2,   #AlignBallGoal
              100.0, #KickoffReward
-             1.0,   #FirstTouchReward
-             1.0,   #AirTimeReward
+             #1.0,   #FirstTouchReward
+             #1.0,   #AirTimeReward
              1.0,   #EnemyTouchBallReward
-             1.0,   #ClosestToBallReward
-             #1.0,   #DribbleReward
-             1.0,   #JumpTouchReward
+             #1.0,   #ClosestToBallReward
+             #2.0,   #DribbleReward
+             #1.0,   #JumpTouchReward
              1.0    #EventReward
              )),
             game_speed=100,
-            boost_consumption=0,
+            boost_consumption=1,
             spawn_opponents=True,
-            terminal_conditions=[timeoutCondition, NoTouchTimeoutCondition(fps * 45), GoalScoredCondition(), DropBallCondition()],
+            terminal_conditions=[timeoutCondition, NoTouchTimeoutCondition(fps * 45), GoalScoredCondition()],
             obs_builder=CustomObs(),
-            state_setter=CustomState(),
+            state_setter=DefaultState(),
             action_parser=DiscreteAction()
         )
 
