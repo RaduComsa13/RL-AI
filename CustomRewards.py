@@ -31,8 +31,6 @@ class EnemyTouchBallReward(RewardFunction):
         for other in state.players:
             if other.team_num != player.team_num and other.ball_touched:
                 return -(state.ball.position[2]) / BALL_RADIUS
-            elif other.team_num == player.team_num and other.ball_touched:
-                return state.ball.position[2] / BALL_RADIUS / 1.5
         return 0
 
 class BoostUseReward(RewardFunction):

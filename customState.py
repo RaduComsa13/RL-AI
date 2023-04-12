@@ -103,3 +103,60 @@ class CustomState(StateSetter):
         angle_radians = math.acos(cosine)
 
         return angle_radians
+
+class RandomDefaultState(StateSetter):
+
+    SPAWN_BLUE_POS = [[-2048, -2560, 17], [2048, -2560, 17],
+                      [-256, -3840, 17], [256, -3840, 17], [0, -4608, 17]]
+    SPAWN_BLUE_YAW = [0.25 * np.pi, 0.75 * np.pi,
+                      0.5 * np.pi, 0.5 * np.pi, 0.5 * np.pi]
+    SPAWN_ORANGE_POS = [[2048, 2560, 17], [-2048, 2560, 17],
+                        [256, 3840, 17], [-256, 3840, 17], [0, 4608, 17]]
+    SPAWN_ORANGE_YAW = [-0.75 * np.pi, -0.25 *
+                        np.pi, -0.5 * np.pi, -0.5 * np.pi, -0.5 * np.pi]
+
+    def __init__(self):
+        super().__init__()
+
+    def reset(self, state_wrapper: StateWrapper):
+        # possible kickoff indices are shuffled
+        spawn_inds = [0, 1, 2, 3, 4]
+        random.shuffle(spawn_inds)
+        state_wrapper.ball.position[0], state_wrapper.ball.position[1], d = self.generate_point(0, 0, 2500)
+        state_wrapper.ball.linear_velocity[0], state_wrapper.ball.linear_velocity[1], d = self.generate_point(500, 500, 2000)
+        blue_count = 0
+        orange_count = 0
+        for car in state_wrapper.cars:
+            pos = [0,0,0]
+            yaw = 0
+            # team_num = 0 = blue team
+            if car.team_num == 0:
+                # select a unique spawn state from pre-determined values
+                pos = self.SPAWN_BLUE_POS[spawn_inds[blue_count]]
+                yaw = self.SPAWN_BLUE_YAW[spawn_inds[blue_count]]
+                blue_count += 1
+            # team_num = 1 = orange team
+            elif car.team_num == 1:
+                # select a unique spawn state from pre-determined values
+                pos = self.SPAWN_ORANGE_POS[spawn_inds[orange_count]]
+                yaw = self.SPAWN_ORANGE_YAW[spawn_inds[orange_count]]
+                orange_count += 1
+            # set car state values
+            car.set_pos(*pos)
+            car.set_rot(yaw=yaw)
+            car.boost = 0.33
+
+    def generate_point(self,x, y, d):
+        # Generate random values for the x and y coordinates of the new point
+        x2 = random.uniform(x - d, x + d)
+        y2 = random.uniform(y - d, y + d)
+
+        # Calculate the distance between the new point and the original point
+        distance = math.sqrt((x2 - x)**2 + (y2 - y)**2)
+
+        # If the distance is greater than or equal to d, return the new point
+        if distance <= d:
+            return x2, y2, distance
+        # Otherwise, recursively generate a new point until the distance is at least d
+        else:
+            return self.generate_point(x, y, d)

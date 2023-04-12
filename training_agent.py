@@ -18,8 +18,9 @@ from rlgym.utils.reward_functions.common_rewards.ball_goal_rewards import Veloci
 from rlgym_tools.extra_rewards.kickoff_reward import KickoffReward
 from rlgym.utils.reward_functions import CombinedReward
 from CustomRewards import VelocityPlayerReward, EnemyTouchBallReward, BoostUseReward, AlignBallGoal, RewardIfBehindBall, VelocityPlayerToBallReward, DribbleReward, JumpTouchReward, ClosestToBallReward, DriveForwardReward, FirstTouchReward, AirTimeReward
-from customState import CustomState
+from customState import CustomState, RandomDefaultState
 from customTimeout import DropBallCondition
+from rlgym_tools.sb3_utils.sb3_multi_agent_tools import multi_learn
 import torch
 
 if __name__ == '__main__':  # Required for multiprocessing
@@ -28,9 +29,9 @@ if __name__ == '__main__':  # Required for multiprocessing
 
     fps = 120 / frame_skip
     gamma = np.exp(np.log(0.5) / (fps * half_life_seconds))  # Quick mafs
-    agents_per_match = 4
-    team_size = 2
-    num_instances = 8
+    agents_per_match = 2
+    team_size = 1
+    num_instances = 10
     target_steps = 1_000_000
     steps = target_steps // (num_instances * agents_per_match) #making sure the experience counts line up properly
     batch_size = target_steps//10 #getting the batch size down to something more manageable - 100k in this case
@@ -53,25 +54,25 @@ if __name__ == '__main__':  # Required for multiprocessing
                 #DriveForwardReward(),
                 #BoostUseReward(),
                 #RewardIfBehindBall(),
-                #VelocityBallToGoalReward(),
+                VelocityBallToGoalReward(),
                 #FaceBallReward(),
                 #AlignBallGoal(),
-                KickoffReward(),
+                #KickoffReward(),
                 #FirstTouchReward(timeoutCondition),
                 #AirTimeReward(),
-                EnemyTouchBallReward(),
+                #EnemyTouchBallReward(),
                 #ClosestToBallReward(),
                 #DribbleReward(),
                 #JumpTouchReward(),
                 EventReward(
-                    goal=50.0,
-                    team_goal=500.0,
-                    concede=-700.0,
-                    shot=100.0,
-                    save=200.0,
-                    demo=10.0,
-                    touch=10.0,
-                    boost_pickup=10.0
+                    goal=1.0,
+                    team_goal=10.0,
+                    concede=-10.0,
+                    shot=2.0,
+                    save=5.0,
+                    demo=1.0,
+                    touch=0.5,
+                    boost_pickup=0.5
                 ),
             ),
             (#1.0,   #VelocityPlayerToballReward
@@ -79,17 +80,17 @@ if __name__ == '__main__':  # Required for multiprocessing
              #1.0,   #DriveForwardReward
              #0.1,   #BoostUseReward
              #1.0,   #RewardIfBehindBall
-             #20.0,  #VelocityBallToGoalReward
+             0.05,   #VelocityBallToGoalReward
              #0.2,   #FaceBallReward
              #0.2,   #AlignBallGoal
-             100.0, #KickoffReward
+             #100.0, #KickoffReward
              #1.0,   #FirstTouchReward
              #1.0,   #AirTimeReward
-             1.0,   #EnemyTouchBallReward
+             #1.0,   #EnemyTouchBallReward
              #1.0,   #ClosestToBallReward
              #2.0,   #DribbleReward
              #1.0,   #JumpTouchReward
-             1.0    #EventReward
+             0.1    #EventReward
              )),
             game_speed=100,
             boost_consumption=1,
@@ -146,6 +147,7 @@ if __name__ == '__main__':  # Required for multiprocessing
     callback = CheckpointCallback(round(5_000_000 / env.num_envs), save_path="models", name_prefix="rl_model")
     device_used = model.device
     print("Device being used:", device_used)
+
     try:
         mmr_model_target_count = model.num_timesteps + mmr_save_frequency
         while True:
