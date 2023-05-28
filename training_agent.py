@@ -65,14 +65,14 @@ if __name__ == '__main__':  # Required for multiprocessing
                 #DribbleReward(),
                 #JumpTouchReward(),
                 EventReward(
-                    goal=1.0,
-                    team_goal=10.0,
+                    goal=10.0,
+                    #team_goal=10.0,
                     concede=-10.0,
-                    shot=2.0,
-                    save=5.0,
+                    shot=3.0,
+                    save=6.0,
                     demo=1.0,
                     touch=0.5,
-                    boost_pickup=0.5
+                    boost_pickup=3.3
                 ),
             ),
             (#1.0,   #VelocityPlayerToballReward
@@ -97,7 +97,7 @@ if __name__ == '__main__':  # Required for multiprocessing
             spawn_opponents=True,
             terminal_conditions=[timeoutCondition, NoTouchTimeoutCondition(fps * 45), GoalScoredCondition()],
             obs_builder=CustomObs(),
-            state_setter=DefaultState(),
+            state_setter=RandomDefaultState(),
             action_parser=DiscreteAction()
         )
 
@@ -135,7 +135,7 @@ if __name__ == '__main__':  # Required for multiprocessing
             vf_coef=1.,                  # From PPO Atari
             gamma=gamma,                 # Gamma as calculated using half-life
             verbose=3,                   # Print out all the info as we're going
-            batch_size=batch_size,             # Batch size as high as possible within reason
+            batch_size=batch_size,       # Batch size as high as possible within reason
             n_steps=steps,                # Number of steps to perform before optimizing network
             tensorboard_log="out/logs",  # `tensorboard --logdir out/logs` in terminal to see graphs
             device="auto"                # Uses GPU if available

@@ -122,8 +122,9 @@ class RandomDefaultState(StateSetter):
         # possible kickoff indices are shuffled
         spawn_inds = [0, 1, 2, 3, 4]
         random.shuffle(spawn_inds)
-        state_wrapper.ball.position[0], state_wrapper.ball.position[1], d = self.generate_point(0, 0, 2500)
-        state_wrapper.ball.linear_velocity[0], state_wrapper.ball.linear_velocity[1], d = self.generate_point(500, 500, 2000)
+        if random.randint(0, 15) % 5 != 0:
+            state_wrapper.ball.position[0], state_wrapper.ball.position[2], d = self.generate_point(0, 0, 2500)
+            state_wrapper.ball.linear_velocity[0], state_wrapper.ball.linear_velocity[2], d = self.generate_point(500, 500, 3000)
         blue_count = 0
         orange_count = 0
         for car in state_wrapper.cars:
