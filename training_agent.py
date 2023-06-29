@@ -19,8 +19,6 @@ from rlgym_tools.extra_rewards.kickoff_reward import KickoffReward
 from rlgym.utils.reward_functions import CombinedReward
 from CustomRewards import VelocityPlayerReward, EnemyTouchBallReward, BoostUseReward, AlignBallGoal, RewardIfBehindBall, VelocityPlayerToBallReward, DribbleReward, JumpTouchReward, ClosestToBallReward, DriveForwardReward, FirstTouchReward, AirTimeReward
 from customState import CustomState, RandomDefaultState
-from customTimeout import DropBallCondition
-from rlgym_tools.sb3_utils.sb3_multi_agent_tools import multi_learn
 import torch
 
 if __name__ == '__main__':  # Required for multiprocessing
@@ -56,11 +54,11 @@ if __name__ == '__main__':  # Required for multiprocessing
                 #RewardIfBehindBall(),
                 VelocityBallToGoalReward(),
                 #FaceBallReward(),
-                #AlignBallGoal(),
+                AlignBallGoal(),
                 #KickoffReward(),
                 #FirstTouchReward(timeoutCondition),
                 #AirTimeReward(),
-                #EnemyTouchBallReward(),
+                EnemyTouchBallReward(),
                 #ClosestToBallReward(),
                 #DribbleReward(),
                 #JumpTouchReward(),
@@ -72,7 +70,7 @@ if __name__ == '__main__':  # Required for multiprocessing
                     save=6.0,
                     demo=1.0,
                     touch=0.5,
-                    boost_pickup=3.3
+                    boost_pickup=2.5
                 ),
             ),
             (#1.0,   #VelocityPlayerToballReward
@@ -82,12 +80,12 @@ if __name__ == '__main__':  # Required for multiprocessing
              #1.0,   #RewardIfBehindBall
              0.05,   #VelocityBallToGoalReward
              #0.2,   #FaceBallReward
-             #0.2,   #AlignBallGoal
+             0.03,   #AlignBallGoal
              #100.0, #KickoffReward
              #1.0,   #FirstTouchReward
              #1.0,   #AirTimeReward
-             #1.0,   #EnemyTouchBallReward
-             #1.0,   #ClosestToBallReward
+             0.001,   #EnemyTouchBallReward
+             #0.02,   #ClosestToBallReward
              #2.0,   #DribbleReward
              #1.0,   #JumpTouchReward
              0.1    #EventReward
@@ -111,7 +109,7 @@ if __name__ == '__main__':  # Required for multiprocessing
         model = PPO.load(
             "models/exit_save.zip",
             env,
-            device=torch.device('cuda'),
+            #device=torch.device('cuda'),
             custom_objects={"n_envs": env.num_envs}, #automatically adjusts to users changing instance count, may encounter shaping error otherwise
             # If you need to adjust parameters mid training, you can use the below example as a guide
             #custom_objects={"n_envs": env.num_envs, "n_steps": steps, "batch_size": batch_size, "n_epochs": 10, "learning_rate": 5e-5}
